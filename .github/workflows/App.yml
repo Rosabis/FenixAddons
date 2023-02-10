@@ -80,7 +80,7 @@ jobs:
         mv arm64.apk ./release/
         mv ./release/arm64.apk ./release/${{ steps.date.outputs.date }}-MyFenix.apk
          
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
           name: file
           path: ./release/
@@ -95,7 +95,7 @@ jobs:
       # 蓝奏云里的文件夹ID
       LANZOU_FOLDER_ID: '5527256'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v2
         with:
           path: release/
