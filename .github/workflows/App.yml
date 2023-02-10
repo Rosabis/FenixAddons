@@ -96,7 +96,7 @@ jobs:
       LANZOU_FOLDER_ID: '5527256'
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
           path: release/
       - working-directory: release/
