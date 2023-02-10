@@ -105,5 +105,5 @@ jobs:
         continue-on-error: true
         run: |
           path="$GITHUB_WORKSPACE/release/"
-          python3 $GITHUB_WORKSPACE/.github/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
+          python3 $GITHUB_WORKSPACE/.github/workflows/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
           echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')]"
