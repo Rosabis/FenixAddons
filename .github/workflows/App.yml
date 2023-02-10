@@ -1,0 +1,109 @@
+name: auto-mod-fxn-v8a
+env:    
+  TZ: America/Sanfransisco  
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 6,18  *  *  *"
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      lanzou: ${{ steps.check.outputs.lanzou }}
+    steps:
+      - id: check
+        run: |
+          if [ ${{ secrets.LANZOU_ID }} ]; then
+            echo "lanzou=yes" >> $GITHUB_OUTPUT
+          fi
+         
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Download Files
+      run: |
+        wget -q -O "resp64m" ${{ secrets.resp64m }}
+        wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.5.0/apktool_2.5.0.jar
+        
+        java -jar apktool_2.5.0.jar d resp64m -o v8a
+        
+    - name: Mod arm64-v8a
+      run: |
+        sed -i 's/browser.safebrowsing.malware.enabled/unknown/;s/browser.safebrowsing.phishing.enabled/unknown/' v8a/smali_classes2/org/mozilla/geckoview/ContentBlocking\$Settings.smali
+        # sed -i 's/android\/downloads/firefox\/downloads/' v8a/smali_classes2/org/mozilla/fenix/AppRequestInterceptor.smali
+        # sed -i 's/if-eqz p0, :cond_c/goto :cond_c/' v8a/smali/mozilla/components/feature/addons/ui/AddonsManagerAdapter.smali
+        # sed -i 's/"geckoViewAddons"/"unknown"/;s/"nativeMessaging"/"unknown"/' v8a/smali/mozilla/components/feature/addons/AddonManager.smali
+        # mv  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider.smali  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali      
+        # sed -e '/.line 86/!b;x;s/^/x/;/^x\{12\}$/{x;iconst-string v5, "https://gh.nuduseng.tk/Rosabis/FenixAddons/releases/download/continous/addons.json"' -e 'b};x'  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali >  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider.smali
+        # rm  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali
+        sed -i 's/"content"/"unknown"/;s/"file"/"unknown"/;s/"resource"/"unknown"/' v8a/smali/mozilla/components/browser/engine/gecko/GeckoEngineSession.smali
+        sed -i '/;->dialog:/i\:cond_a1' v8a/smali/mozilla/components/feature/app/links/AppLinksFeature\$start\$1\$3.smali
+        sed -i '/private:Z/a\\if-eqz p2, :cond_a1' v8a/smali/mozilla/components/feature/app/links/AppLinksFeature\$start\$1\$3.smali
+        # sed -i 's/RECOMMENDED:/NONE:/' v8a/smali/mozilla/components/browser/engine/gecko/GeckoEngine.smali
+        
+    - name: Compile Files
+      run: |       
+        java -jar apktool_2.5.0.jar b v8a -o v8a.apk --use-aapt2
+        wget -q https://github.com/Rosabis/FenixAddons/raw/main/zipalign
+        wget -q -P ./lib64 https://github.com/Rosabis/FenixAddons/raw/main/libc%2B%2B.so
+        chmod +x zipalign
+        ./zipalign -p 4 v8a.apk v8a-align.apk        
+    - name: Sign Files
+      run: |        
+        wget -q https://github.com/Rosabis/FenixAddons/raw/main/apksigner.jar
+        wget -q https://github.com/Rosabis/FenixAddons/raw/main/apksigner.jks
+        java -jar apksigner.jar sign --ks apksigner.jks --ks-pass pass:testkey --out arm64.apk v8a-align.apk
+    - name: Upload armv8 release  
+      uses: svenstaro/upload-release-action@v2  
+      with:             
+         repo_token: ${{ secrets.ACTION_TOKEN }}  
+         file: ./arm64.apk            
+         tag: "continous"          
+         body: "Automatic CI builds"
+         file_glob: true           
+         prerelease: true             
+         overwrite: true   
+    - name: Get current date
+      id: date
+      run: echo "date=$(date +%Y.%m.%d.%H)" >> $GITHUB_OUTPUT
+      
+    - name: Set New Name
+      run: |
+        mkdir release
+        mv arm64.apk ./release/
+        mv ./release/arm64.apk ./release/${{ steps.date.outputs.date }}-MyFenix.apk
+         
+    - uses: actions/upload-artifact@v2
+      with:
+          name: file
+          path: ./release/
+
+  lanzou:
+    needs: [ prepare, build ]
+    runs-on: ubuntu-latest
+    env:
+      # 登录蓝奏云后在控制台运行document.cookie
+      ylogin: ${{ secrets.LZY_YLOGIN }}
+      phpdisk_info: ${{ secrets.LZY_PHPDISK_INFO }}
+      # 蓝奏云里的文件夹ID
+      LANZOU_FOLDER_ID: '5527256'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: release/
+      - working-directory: release/
+        run: mv */*.apk . ;rm -rf */
+      - name: Upload To Lanzou
+        continue-on-error: true
+        run: |
+          path="$GITHUB_WORKSPACE/release/"
+          python3 $GITHUB_WORKSPACE/.github/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
+          echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')]"
