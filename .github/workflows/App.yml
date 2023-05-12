@@ -29,13 +29,12 @@ jobs:
 
     - name: Download Files
       run: |
-        wget -q -O "resp64m" ${{ secrets.resp64m }}
+        wget -q -O "resp64m" https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mobile.v3.firefox-android.apks.fenix-nightly.latest.arm64-v8a/artifacts/public%2Fbuild%2Ffenix%2Farm64-v8a%2Ftarget.apk
         wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.7.0/apktool_2.7.0.jar
-        
-        java -jar apktool_2.7.0.jar d resp64m -o v8a
         
     - name: Mod arm64-v8a
       run: |
+        java -jar apktool_2.7.0.jar d resp64m -o v8a
         sed -i 's/browser.safebrowsing.malware.enabled/unknown/;s/browser.safebrowsing.phishing.enabled/unknown/' v8a/smali_classes2/org/mozilla/geckoview/ContentBlocking\$Settings.smali
         # sed -i 's/android\/downloads/firefox\/downloads/' v8a/smali_classes2/org/mozilla/fenix/AppRequestInterceptor.smali
         # sed -i 's/if-eqz p0, :cond_c/goto :cond_c/' v8a/smali/mozilla/components/feature/addons/ui/AddonsManagerAdapter.smali
