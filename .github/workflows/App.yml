@@ -30,9 +30,9 @@ jobs:
     - name: Download Files
       run: |
         wget -q -O "resp64m" ${{ secrets.resp64m }}
-        wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.5.0/apktool_2.5.0.jar
+        wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.7.0/apktool_2.7.0.jar
         
-        java -jar apktool_2.5.0.jar d resp64m -o v8a
+        java -jar apktool_2.7.0.jar d resp64m -o v8a
         
     - name: Mod arm64-v8a
       run: |
@@ -50,7 +50,7 @@ jobs:
         
     - name: Compile Files
       run: |       
-        java -jar apktool_2.5.0.jar b v8a -o v8a.apk --use-aapt2
+        java -jar apktool_2.7.0.jar b v8a -o v8a.apk --use-aapt2
         wget -q https://github.com/Rosabis/FenixAddons/raw/main/zipalign
         wget -q -P ./lib64 https://github.com/Rosabis/FenixAddons/raw/main/libc%2B%2B.so
         chmod +x zipalign
