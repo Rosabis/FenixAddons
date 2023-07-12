@@ -29,7 +29,7 @@ jobs:
 
     - name: Download Files
       run: |
-        wget -q -O "resp64m" https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mobile.v3.firefox-android.apks.fenix-nightly.latest.arm64-v8a/artifacts/public%2Fbuild%2Ffenix%2Farm64-v8a%2Ftarget.apk
+        wget -q -O "resp64m" https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mobile.v3.firefox-android.apks.fenix-nightly.latest.arm64-v8a/artifacts/public%2Fbuild%2Ftarget.arm64-v8a.apk
         wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.7.0/apktool_2.7.0.jar
         
     - name: Mod fxn-arm64-v8a
