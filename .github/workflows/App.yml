@@ -1,4 +1,4 @@
-name: auto-mod-fxn-v8a
+name: auto-mod-fxn-v8
 env:    
   TZ: America/Sanfransisco  
 on:
