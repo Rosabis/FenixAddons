@@ -42,7 +42,7 @@ jobs:
         # mv  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider.smali  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali      
         # sed -e '/.line 86/!b;x;s/^/x/;/^x\{12\}$/{x;iconst-string v5, "https://gh.nuduseng.tk/Rosabis/FenixAddons/releases/download/continous/addons.json"' -e 'b};x'  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali >  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider.smali
         # rm  v8a/smali/mozilla/components/feature/addons/amo/AddonCollectionProvider1.smali
-        sed -i 's/"content"/"unknown"/;s/"file"/"unknown"/;s/"resource"/"unknown"/' v8a/smali/mozilla/components/browser/engine/gecko/GeckoEngineSession.smali
+        # sed -i 's/"content"/"unknown"/;s/"file"/"unknown"/;s/"resource"/"unknown"/' v8a/smali/mozilla/components/browser/engine/gecko/GeckoEngineSession.smali
         # sed -i '/;->dialog:/i\:cond_a1' v8a/smali/mozilla/components/feature/app/links/AppLinksFeature\$start\$1\$3.smali
         # sed -i '/private:Z/a\\if-eqz p2, :cond_a1' v8a/smali/mozilla/components/feature/app/links/AppLinksFeature\$start\$1\$3.smali
         # sed -i 's/RECOMMENDED:/NONE:/' v8a/smali/mozilla/components/browser/engine/gecko/GeckoEngine.smali
